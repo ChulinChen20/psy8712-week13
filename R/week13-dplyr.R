@@ -1,6 +1,7 @@
 library(keyring)
 library(RMariaDB)
 library(tidyverse)
+library(psych)
 
 # Script Settings and Resources
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
@@ -30,5 +31,8 @@ week13_tbl = read_csv("../data/week13.csv", show_col_types = FALSE)
 
 # Analysis
 
-# 1. Display the total number of managers.
+# Display the total number of managers.
+week13_tbl %>% nrow()
+
+# Display the total number of unique managers.
 week13_tbl %>% nrow()
