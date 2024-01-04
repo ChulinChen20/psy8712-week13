@@ -45,6 +45,22 @@ dbGetQuery(conn, "SELECT performance_group, AVG(yrs_employed) AS avg_yrs,
            FROM datascience_8960_table 
            GROUP BY performance_group;")
 
+# Display the location and ID numbers of the top 3 managers from each location, 
+# in alphabetical order by location and then descending order of test score. 
+# If there are ties, include everyone reaching rank 3. 
+dbGetQuery(conn, "WITH added_dense_rank AS (
+           SELECT *, 
+           DENSE_RANK() OVER(PARTITION BY city ORDER BY city ASC, test_score DESC) 
+           AS ranking
+           FROM datascience_8960_table
+           )
+           SELECT employee_id, city
+           FROM added_dense_rank
+           WHERE ranking <=3
+           ORDER BY city ASC, test_score DESC
+           ;")
+
+
 
 
            
