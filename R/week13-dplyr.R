@@ -6,10 +6,6 @@ library(tidyverse)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 ##### Data Import and cleaning #####
-## Run in Console ##
-key_set_with_value(service="latis-mysql", username="chen6496",
-                   password="Timeandspace1918")
-
 conn <- dbConnect(MariaDB(),
                   user="chen6496",
                   password=key_get("latis-mysql","chen6496"),
