@@ -24,16 +24,23 @@ dbExecute(conn, "USE cla_tntlab;")
 dbGetQuery(conn, "SHOW TABLES")
 
 # Display the total number of managers
-dbGetQuery(conn, "SELECT COUNT(*) FROM datascience_8960_table")
+dbGetQuery(conn, "SELECT COUNT(*) 
+           FROM datascience_employees 
+           INNER JOIN datascience_testscores 
+           ON datascience_employees.employee_id = datascience_testscores.employee_id;")
 
 # Display the total number of unique managers (i.e., unique by id number).
-dbGetQuery(conn, "SELECT COUNT(DISTINCT(employee_id)) 
-           FROM datascience_8960_table;")
+dbGetQuery(conn, "SELECT COUNT(DISTINCT(datascience_employees.employee_id)) 
+           FROM datascience_employees 
+           INNER JOIN datascience_testscores 
+           ON datascience_employees.employee_id = datascience_testscores.employee_id;")
 
 # Display a summary of the number of managers split by location, 
 #but only include those who were not originally hired as managers.
-dbGetQuery(conn, "SELECT COUNT(DISTINCT(employee_id)) AS num_managers, city
-           FROM datascience_8960_table 
+dbGetQuery(conn, "SELECT COUNT(DISTINCT(datascience_employees.employee_id)) AS num_managers, city
+           FROM datascience_employees 
+           INNER JOIN datascience_testscores 
+           ON datascience_employees.employee_id = datascience_testscores.employee_id 
            WHERE manager_hire = 'N'
            GROUP BY city;")
 
@@ -42,25 +49,19 @@ dbGetQuery(conn, "SELECT COUNT(DISTINCT(employee_id)) AS num_managers, city
 
 dbGetQuery(conn, "SELECT performance_group, AVG(yrs_employed) AS avg_yrs, 
            STDDEV(yrs_employed) AS sd_yrs 
-           FROM datascience_8960_table 
+           FROM datascience_employees 
+           INNER JOIN datascience_testscores 
+           ON datascience_employees.employee_id = datascience_testscores.employee_id  
            GROUP BY performance_group;")
 
-# Display the location and ID numbers of the top 3 managers from each location, 
+# Display the location and ID numbers of all managers from each location, 
 # in alphabetical order by location and then descending order of test score. 
-# If there are ties, include everyone reaching rank 3. 
-dbGetQuery(conn, "WITH added_dense_rank AS (
-           SELECT *, 
+
+dbGetQuery(conn, "
+           SELECT datascience_employees.employee_id, city, test_score,
            DENSE_RANK() OVER(PARTITION BY city ORDER BY city ASC, test_score DESC) 
            AS ranking
-           FROM datascience_8960_table
-           )
-           SELECT employee_id, city
-           FROM added_dense_rank
-           WHERE ranking <=3
-           ORDER BY city ASC, test_score DESC
-           ;")
-
-
-
-
-           
+           FROM datascience_employees 
+           INNER JOIN datascience_testscores 
+           ON datascience_employees.employee_id = datascience_testscores.employee_id 
+           ")
